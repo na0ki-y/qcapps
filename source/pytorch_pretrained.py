@@ -56,7 +56,7 @@ def mycovert(img,device,transform):
     inputs = transform(img)
     inputs = inputs.unsqueeze(0).to(device)
     return inputs
-    
+
 def myeval(inputs,model,):
     model.eval()
     outputs = model(inputs)
@@ -74,7 +74,7 @@ def myeval(inputs,model,):
 def main():
     device,model,transform=prepara()
 
-    img = Image.open("./image/irasutoya_character_apple.png").convert('RGB')
+    img = Image.open("./image/irasutoya_character_apple.png")
     inputs=mycovert(img,device,transform)
     eval_out=myeval(inputs,model,)
     for o in eval_out:

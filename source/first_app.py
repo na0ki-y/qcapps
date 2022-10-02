@@ -3,6 +3,14 @@ https://camp.trainocate.co.jp/magazine/streamlit-web/
 '''
 import streamlit as st
 from PIL import Image
+import sys
+import pathlib
+# ひとつ上の階層の絶対パスを取得
+parent_dir = str(pathlib.Path(__file__).parent.parent.resolve())
+# モジュール検索パスに，ひとつ上の階層の絶対パスを追加
+sys.path.append(parent_dir)
+from source import pytorch_pretrained 
+#import pytorch_pretrained 
 
 def load_image(image_file):
 	img = Image.open(image_file)
@@ -23,6 +31,13 @@ def main():
 
             # To View Uploaded Image
             st.image(load_image(image_file),width=250)
+    st.markdown("# Pytorch")
+    device,model,transform=pytorch_pretrained.prepara()
+    img = Image.open("./image/irasutoya_character_apple.png")
+    inputs=pytorch_pretrained.mycovert(img,device,transform)
+    eval_out=pytorch_pretrained.myeval(inputs,model,)
+    for o in eval_out:
+        print(o)
 
     st.markdown("# Other Sample")
     
