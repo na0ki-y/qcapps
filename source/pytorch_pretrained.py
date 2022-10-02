@@ -56,6 +56,7 @@ def mycovert(img,device,transform):
     inputs = transform(img)
     inputs = inputs.unsqueeze(0).to(device)
     return inputs
+    
 def myeval(inputs,model,):
     model.eval()
     outputs = model(inputs)
