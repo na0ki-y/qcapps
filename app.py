@@ -1,8 +1,8 @@
-from source import first_app
+from source import img_app
 
 
 if __name__ == '__main__':
-    first_app.main()
+    img_app.main()
 
 
 
