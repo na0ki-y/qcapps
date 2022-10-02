@@ -1,8 +1,8 @@
-from source.first_app import main_first
+from source import first_app
 
 
 if __name__ == '__main__':
-    main_first()
+    first_app.main()
 
 
 
