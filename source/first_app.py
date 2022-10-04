@@ -20,6 +20,18 @@ def main():
     st.title("Quantum Computer App ")
     st.markdown("[QC4U](https://altema.is.tohoku.ac.jp/QC4U/) Group4")
 
+    st.markdown("# Secrets")#20221004
+    st.markdown("[Add secrets to your Streamlit apps](https://blog.streamlit.io/secrets-in-sharing-apps/)")
+
+    st.markdown("TOML形式（辞書）で隠したい変数を書く")
+    st.markdown("local:.streamlit/secrets.homl  ※gitignoreすること!")
+    st.markdown("deploy:Edit secrets")
+
+    st.write("secrets_sample-a:", st.secrets["secrets_sample"]["a"])
+    st.write("secrets_sample-b:", st.secrets["secrets_sample"]["b"])
+    #st.write("secrets_sample-c(存在しない):", st.secrets["secrets_sample"]["c"])
+        #-> KeyError: 'st.secrets has no key "c" 
+
     st.markdown("# Upload image")
     image_file = st.file_uploader("Upload Images", type=["png","jpg","jpeg"])
     if image_file is not None:
