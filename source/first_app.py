@@ -32,6 +32,9 @@ def main():
     #st.write("secrets_sample-c(存在しない):", st.secrets["secrets_sample"]["c"])
         #-> KeyError: 'st.secrets has no key "c" 
 
+    st.markdown("firebaseの秘密鍵はJSONファイルなのでTOMLに変換して同様にlocal/deployにペーストすれば良い[Streamlit ❤️ Firestore (continued)](https://blog.streamlit.io/streamlit-firestore-continued/)")
+    
+
     st.markdown("# Upload image")
     image_file = st.file_uploader("Upload Images", type=["png","jpg","jpeg"])
     if image_file is not None:
