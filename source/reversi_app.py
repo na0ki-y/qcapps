@@ -20,7 +20,7 @@ from source import pytorch_pretrained
 def checkWin(board):
    pass
 
-NUM_SQUARE=8#6
+NUM_SQUARE=6
 
 YOUR_COLOR = "●" # あなたの石の色
 COM_COLOR = "○" # 相手の石の色
@@ -103,7 +103,7 @@ def oku(r,c,which):
     st.session_state.board[r][c]=color_dic[which]
     registerAngle(r,c,which)
 
-def showResult(self):
+def showResult():
         '''ゲーム終了時の結果を表示する'''
 
         # それぞれの色の石の数を数える
@@ -112,27 +112,30 @@ def showResult(self):
 
         for y in range(NUM_SQUARE):
             for x in range(NUM_SQUARE):
-                if self.board[y][x] == YOUR_COLOR:
+                if st.session_state.board[y][x] == YOUR_COLOR:
                     num_your += 1
-                elif self.board[y][x] == COM_COLOR:
+                elif st.session_state.board[y][x] == COM_COLOR:
                     num_com += 1
-
+        simple_winner="COM"
+        if num_your>num_com:
+            simple_winner="You"
         # 確率振幅を合計する
         prop_your = 0
         prop_com = 0
 
         for i in range(NUM_SQUARE):
             for x in range(NUM_SQUARE):
-                prop_your += (np.cos((self.angle[i][x])/2))**2
-                prop_com += (np.sin((self.angle[i][x])/2))**2
+                prop_your += (np.cos((st.session_state.angle[i][x])/2))**2
+                prop_com += (np.sin((st.session_state.angle[i][x])/2))**2
 
         prop_your = round(prop_your, 2)
         prop_com = round(prop_com, 2)
+        q_winner="COM"
+        if prop_your>prop_com:
+            q_winner="You"
 
-        # 結果をメッセージボックスで表示する
-        tkinter.messagebox.showinfo('結果', 'あなた' + str(num_your) + '：COM' + str(num_com))
-        tkinter.messagebox.showinfo('角度の結果','あなた' + str(prop_your) + ':COM' + str(prop_com))
-
+  
+        st.session_state.game_result ={"YOU_num":num_your,"COM_num":num_com,"YOU_angle":prop_your,"COM_angle":prop_com,"Simple_winner":simple_winner,"Q_winner":q_winner}
 
 def checkPlacable(x, y):
         '''(x,y)に石が置けるかどうかをチェック'''
@@ -222,6 +225,10 @@ def main():
         st.session_state.winner = None
         st.session_state.placable = None
         st.session_state.message=init_message
+
+        st.session_state.game_result=None
+
+
         st.session_state.board = np.full((NUM_SQUARE, NUM_SQUARE),BOARD_COLOR, dtype=str)
         # 石の角度を管理する2次元リストを作成（最初は90度（重ね合わせ））
         st.session_state.angle = np.full((NUM_SQUARE, NUM_SQUARE), np.pi / 2, dtype=float)
@@ -237,6 +244,17 @@ def main():
         # Define callbacks to handle button clicks.
     st.session_state.placable = getPlacable()
     showPlacable(st.session_state.placable)
+    if len(st.session_state.placable)==0:
+        #skip
+        st.session_state.next_player = (
+                YOU  if st.session_state.next_player ==COM  else COM
+                )
+        st.session_state.placable = getPlacable()
+        if len(st.session_state.placable)==0:
+            #game end
+            showResult()
+
+
 
     def handle_click(i, j):#click
         if not st.session_state.winner:
@@ -268,11 +286,15 @@ def main():
             )
 
 
-    if st.session_state.winner:
-        st.success(f"Congrats! {st.session_state.winner} won the game! 🎈")
+    if st.session_state.game_result!=None:
+        #st.session_state.game_result ={"YOU_num":num_your,"COM_num":num_com,"YOU_angle":prop_your,"COM_angle":prop_com,"Simple_winner":simple_winner,"Q_winner":q_winner}
+        st.balloons()
+        st.success("Simple Reversi:"+st.session_state.game_result["Simple_winner"]+"(you:{},com:{})".format(st.session_state.game_result["YOU_num"],st.session_state.game_result["COM_num"]))
+        st.success("Q-Reversi:"+st.session_state.game_result["Q_winner"]+"(you:{},com:{})".format(st.session_state.game_result["YOU_angle"],st.session_state.game_result["COM_angle"]))
+
+
 
     ckbx_angle = st.checkbox("角度を確認する") #引数に入れることでboolを返す
-
     if ckbx_angle:
         st.table(st.session_state.angle)#,0.1,0.1)
 
