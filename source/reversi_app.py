@@ -10,7 +10,7 @@ import pathlib
 parent_dir = str(pathlib.Path(__file__).parent.parent.resolve())
 # モジュール検索パスに，ひとつ上の階層の絶対パスを追加
 sys.path.append(parent_dir)
-from source import pytorch_pretrained 
+
 #import pytorch_pretrained 
 
 
