@@ -3,15 +3,7 @@ https://camp.trainocate.co.jp/magazine/streamlit-web/
 '''
 import numpy as np
 import streamlit as st
-from PIL import Image
-import sys
-import pathlib
-# ひとつ上の階層の絶対パスを取得
-parent_dir = str(pathlib.Path(__file__).parent.parent.resolve())
-# モジュール検索パスに，ひとつ上の階層の絶対パスを追加
-sys.path.append(parent_dir)
 
-#import pytorch_pretrained 
 
 
 # From: https://stackoverflow.com/questions/39922967/python-determine-tic-tac-toe-winner
