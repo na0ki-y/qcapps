@@ -33,6 +33,27 @@ def main():
         #-> KeyError: 'st.secrets has no key "c" 
 
     st.markdown("firebaseの秘密鍵はJSONファイルなのでTOMLに変換して同様にlocal/deployにペーストすれば良い[Streamlit ❤️ Firestore (continued)](https://blog.streamlit.io/streamlit-firestore-continued/)")
+    st.markdown("# sesstion state counter")
+    #https://blog.streamlit.io/session-state-for-streamlit/amp/
+    # ここでは 'counter' というセッション変数を作っている
+    if 'count' not in st.session_state:
+        st.session_state.count = 0
+
+    # Create a button which will increment the counter
+    increment = st.button('Increment')
+    if increment:
+        st.session_state.count += 1
+
+
+    def decrement_one_clicks():
+        # ボタンが押されたらセッション変数の値を減らす
+        st.session_state['count'] -= 1
+    # ボタンを作成するときにコールバックを登録しておく
+    st.button(label='-1',
+              on_click=decrement_one_clicks)
+    
+    # セッション変数の状態を表示する
+    st.write('Count = ', st.session_state.count)
     
 
     st.markdown("# Upload image")
