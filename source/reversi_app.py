@@ -116,9 +116,9 @@ def showResult():
                     num_your += 1
                 elif st.session_state.board[y][x] == COM_COLOR:
                     num_com += 1
-        simple_winner="COM"
+        simple_winner="Player2○"
         if num_your>num_com:
-            simple_winner="You"
+            simple_winner="Player1●"
         # 確率振幅を合計する
         prop_your = 0
         prop_com = 0
@@ -130,9 +130,9 @@ def showResult():
 
         prop_your = round(prop_your, 2)
         prop_com = round(prop_com, 2)
-        q_winner="COM"
+        q_winner="Player2○"
         if prop_your>prop_com:
-            q_winner="You"
+            q_winner="Player1●"
 
   
         st.session_state.game_result ={"YOU_num":num_your,"COM_num":num_com,"YOU_angle":prop_your,"COM_angle":prop_com,"Simple_winner":simple_winner,"Q_winner":q_winner}
@@ -212,6 +212,37 @@ def getPlacable():
 
 init_message=PLACABLE_COLOR+"の場所におけます。"
 desp_cols=[0.2]*(NUM_SQUARE-1)+[0.9]#列の間隔　一番右だけ大きくするといい感じに左側に固まる！
+def init_syori():
+    st.session_state.mode_com ="YOU v.s.COM"
+
+    st.session_state.next_player =COM 
+    st.session_state.placable = None
+    st.session_state.message=init_message
+
+    st.session_state.game_result=None
+
+
+    st.session_state.board = np.full((NUM_SQUARE, NUM_SQUARE),BOARD_COLOR, dtype=str)
+    # 石の角度を管理する2次元リストを作成（最初は90度（重ね合わせ））
+    st.session_state.angle = np.full((NUM_SQUARE, NUM_SQUARE), np.pi / 2, dtype=float)
+    mannaka=int(NUM_SQUARE/2)
+    oku(mannaka,mannaka,YOU)
+    oku(mannaka-1,mannaka-1,YOU)
+    oku(mannaka-1,mannaka,COM)
+    oku(mannaka,mannaka-1,COM)
+def com():
+    # 石が置けるマスを取得
+    st.session_state.placable = getPlacable()
+
+    # 最初のマスを次に石を置くマスとする
+    if len(st.session_state.placable)!=0:
+        x, y = st.session_state.placable[0]
+        oku(x,y,YOU)
+    st.session_state.next_player = (
+                YOU  if st.session_state.next_player ==COM  else COM
+                )
+
+
 def main():
     st.header('Q-Reversi')
     st.caption("[QC4U](https://altema.is.tohoku.ac.jp/QC4U/) Group4(Quantum Force)")
@@ -221,24 +252,18 @@ def main():
 
     # Initialize state.
     if "board" not in st.session_state:
-        st.session_state.next_player =COM 
-        st.session_state.winner = None
-        st.session_state.placable = None
-        st.session_state.message=init_message
+        init_syori()
+    
+    #if st.session_state.mode_com=='YOU v.s.COM':
+    #    st.write("あなたの色:"+color_dic[st.session_state.next_player])
+    
+    #    st.write("次は:Player"+str(st.session_state.next_player)+color_dic[st.session_state.next_player])
 
-        st.session_state.game_result=None
-
-
-        st.session_state.board = np.full((NUM_SQUARE, NUM_SQUARE),BOARD_COLOR, dtype=str)
-        # 石の角度を管理する2次元リストを作成（最初は90度（重ね合わせ））
-        st.session_state.angle = np.full((NUM_SQUARE, NUM_SQUARE), np.pi / 2, dtype=float)
-        mannaka=int(NUM_SQUARE/2)
-        oku(mannaka,mannaka,YOU)
-        oku(mannaka-1,mannaka-1,YOU)
-        oku(mannaka-1,mannaka,COM)
-        oku(mannaka,mannaka-1,COM)
-        
-    st.write("next player is:"+color_dic[st.session_state.next_player])
+    #if st.button("モード変更"):
+    #   st.session_state.mode_com=st.radio(
+    #    "Mode Selection",
+    #    ('YOU v.s.COM', 'Player1 v.s. Player2'))
+    st.write("次は:Player"+str(st.session_state.next_player)+color_dic[st.session_state.next_player])
     st.write(st.session_state.message)
 
         # Define callbacks to handle button clicks.
@@ -257,7 +282,6 @@ def main():
 
 
     def handle_click(i, j):#click
-        if not st.session_state.winner:
             if checkPlacable(i, j):
                 st.session_state.message=init_message
                 # TODO: Handle the case when nobody wins but the game is over!
@@ -266,11 +290,11 @@ def main():
                 st.session_state.next_player = (
                 YOU  if st.session_state.next_player ==COM  else COM
                 )
-                winner = checkWin(st.session_state.board)
-                if winner != BOARD_COLOR:
-                    st.session_state.winner = winner
+                
             else:
                 st.session_state.message="注意！そこにはおけません"
+            #if st.session_state.mode_com=="YOU v.s.COM":
+            #    com()
                 
 
     # Show one button for each field.
@@ -298,6 +322,10 @@ def main():
     if ckbx_angle:
         st.table(st.session_state.angle)#,0.1,0.1)
 
+    #if st.checkbox('はじめから'):
+    #    st.info('本当に、はじめからにしますか？', icon="ℹ️")
+    #    if st.checkbox('はい。'):
+    #        init_syori()
     
 if __name__ == '__main__':
     main()
