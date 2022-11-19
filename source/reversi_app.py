@@ -82,7 +82,7 @@ def reverse(x, y):
                         if st.session_state.board[x + i * s][y + j * s] == color_dic[st.session_state.next_player]:
                             for n in range(1, s):
                                 # 盤面の石の管理リストを石を裏返した状態に更新
-                                kawaru(x + i * n,y + j * n,st.session_state.next_player,theta_0*s-1/NUM_SQUARE)
+                                kawaru(x + i * n,y + j * n,st.session_state.next_player,theta_0*(s-1))
 
                                 
                             break
@@ -313,7 +313,7 @@ def main():
     ckbx_angle = st.checkbox("角度を確認する") #引数に入れることでboolを返す
     if ckbx_angle:
         st.table(st.session_state.angle)#,0.1,0.1)
-
+        #st.table(np.round(st.session_state.angle, 2))
     #if st.checkbox('はじめから'):
     #    st.info('本当に、はじめからにしますか？', icon="ℹ️")
     #    if st.checkbox('はい。'):
