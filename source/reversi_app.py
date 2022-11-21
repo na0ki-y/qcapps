@@ -3,6 +3,7 @@ https://camp.trainocate.co.jp/magazine/streamlit-web/
 '''
 import numpy as np
 import streamlit as st
+import random
 
 
 
@@ -32,18 +33,6 @@ color_dic = { # 石の色を保持する辞書
             COM : COM_COLOR
         }
 
-def registerAngle(x, y, which):
-        '''新しい石を置いたときに角度を登録する'''
-        if which == YOU:
-            st.session_state.angle[x][y] += base_theta
-        else:
-            st.session_state.angle[x][y] -= base_theta
-def kawaruAngle(x, y, which,kakudo):
-        '''裏返ったときに角度を変更する'''
-        if which == YOU:
-            st.session_state.angle[x][y] += kakudo
-        else:
-            st.session_state.angle[x][y] -= kakudo
 def reverse(x, y):
         '''(x,y)に石が置かれた時に裏返す必要のある石を裏返す'''
         # (x,y)にすでに石が置かれている場合は何もしない
@@ -86,14 +75,24 @@ def reverse(x, y):
 
                                 
                             break
-def kawaru(r,c,which,kakudo):
-    st.session_state.board[r][c]=color_dic[which]
-    kawaruAngle(r,c,which,kakudo)
-def oku(r,c,which):
+
+random_l=[-1,0,0,0,1]
+def kawaru(x,y,which,kakudo):
+    '''裏返ったときに色変更と角度を変更する'''
+    st.session_state.board[x][y]=color_dic[which]
+    if which == YOU:
+        st.session_state.angle[x][y] += (kakudo+random.choice(random_l) *st.session_state.angle[x][y]* 0.05)
+    else:
+        st.session_state.angle[x][y] -= (kakudo+random.choice(random_l) *st.session_state.angle[x][y]* 0.05)
+def oku(x,y,which):
+    '''新しい石を置いたときに色変更と角度を登録する'''
     #drawDisk
-    reverse(r,c)
-    st.session_state.board[r][c]=color_dic[which]
-    registerAngle(r,c,which)
+    reverse(x,y)
+    st.session_state.board[x][y]=color_dic[which]
+    if which == YOU:
+        st.session_state.angle[x][y] += base_theta
+    else:
+        st.session_state.angle[x][y] -= base_theta
 
 def showResult():
         '''ゲーム終了時の結果を表示する'''
@@ -210,10 +209,7 @@ def init_syori():
     st.session_state.next_player =COM 
     st.session_state.placable = None
     st.session_state.message=init_message
-
     st.session_state.game_result=None
-
-
     st.session_state.board = np.full((NUM_SQUARE, NUM_SQUARE),BOARD_COLOR, dtype=str)
     # 石の角度を管理する2次元リストを作成（最初は90度（重ね合わせ））
     st.session_state.angle = np.full((NUM_SQUARE, NUM_SQUARE), np.pi / 2, dtype=float)
