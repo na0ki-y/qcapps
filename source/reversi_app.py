@@ -80,10 +80,11 @@ random_l=[-1,0,0,0,1]
 def kawaru(x,y,which,kakudo):
     '''裏返ったときに色変更と角度を変更する'''
     st.session_state.board[x][y]=color_dic[which]
-    if which == YOU:
-        st.session_state.angle[x][y] += (kakudo+random.choice(random_l) *st.session_state.angle[x][y]* 0.05)
-    else:
-        st.session_state.angle[x][y] -= (kakudo+random.choice(random_l) *st.session_state.angle[x][y]* 0.05)
+    if random.random()>0.95:
+        if which == YOU:
+            st.session_state.angle[x][y] += kakudo
+        else:
+            st.session_state.angle[x][y] -= kakudo
 def oku(x,y,which):
     '''新しい石を置いたときに色変更と角度を登録する'''
     #drawDisk
