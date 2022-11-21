@@ -314,6 +314,6 @@ def main():
     #    st.info('本当に、はじめからにしますか？', icon="ℹ️")
     #    if st.checkbox('はい。'):
     #        init_syori()
-    
+    st.caption("[View source code](https://github.com/na0ki-y/qcapps)")
 if __name__ == '__main__':
     main()
