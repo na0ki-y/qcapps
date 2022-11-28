@@ -4,6 +4,9 @@ https://camp.trainocate.co.jp/magazine/streamlit-web/
 import numpy as np
 import streamlit as st
 import random
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit import Aer
+from qiskit.visualization import array_to_latex
 
 
 
@@ -13,7 +16,7 @@ import random
 def checkWin(board):
    pass
 
-NUM_SQUARE=6
+NUM_SQUARE=4
 
 YOUR_COLOR = "●" # あなたの石の色
 COM_COLOR = "○" # 相手の石の色
@@ -115,19 +118,44 @@ def showResult():
         prop_your = 0
         prop_com = 0
 
-        for i in range(NUM_SQUARE):
+        for y in range(NUM_SQUARE):
             for x in range(NUM_SQUARE):
-                prop_your += (np.cos((st.session_state.angle[i][x])/2))**2
-                prop_com += (np.sin((st.session_state.angle[i][x])/2))**2
+                prop_your += (np.cos((st.session_state.angle[y][x])/2))**2
+                prop_com += (np.sin((st.session_state.angle[y][x])/2))**2
 
         prop_your = round(prop_your, 2)
         prop_com = round(prop_com, 2)
         q_winner="Player2○"
         if prop_your>prop_com:
             q_winner="Player1●"
+        
+        #qiskit
+        # 角度を量子シュミレータを使って計算
+        qc = QuantumCircuit(0)
+        qr = QuantumRegister(NUM_SQUARE*NUM_SQUARE)
+        qc.add_register(qr)
+        qc.h(qr)
+        for y in range(NUM_SQUARE):
+            for x in range(NUM_SQUARE):
+                qc.ry(st.session_state.angle[y][x], qr[y*NUM_SQUARE+x])
+        cr = ClassicalRegister(NUM_SQUARE*NUM_SQUARE,'creg')
+        qc.add_register(cr)                             #測定後の0or1を保存する従来のレジスタ   確率ではない
+        qc.measure(qr,cr)                         #観測する
+        sim = Aer.get_backend('qasm_simulator')        #実際に動かした時のシミュレータ
+        res = sim.run(qc, shots = 1).result()    
+        ans=list(res.get_counts().keys())[0]
+        q_num_your=ans.count("1")
+        q_num_com=ans.count("0")
+        q_simple_winner="Player2○"
+        if q_num_your>q_num_com:
+            q_simple_winner="Player1●"
+        
+
+
+
 
   
-        st.session_state.game_result ={"YOU_num":num_your,"COM_num":num_com,"YOU_angle":prop_your,"COM_angle":prop_com,"Simple_winner":simple_winner,"Q_winner":q_winner}
+        st.session_state.game_result ={"YOU_num":num_your,"COM_num":num_com,"YOU_angle":prop_your,"COM_angle":prop_com,"q_YOU_num":q_num_your,"q_COM_num":q_num_com,"Simple_winner":simple_winner,"Q_winner":q_winner,"q_Simple_winner":q_simple_winner,}
 
 def checkPlacable(x, y):
         '''(x,y)に石が置けるかどうかをチェック'''
@@ -304,6 +332,7 @@ def main():
         st.balloons()
         st.success("Simple Reversi:"+st.session_state.game_result["Simple_winner"]+"(you:{},com:{})".format(st.session_state.game_result["YOU_num"],st.session_state.game_result["COM_num"]))
         st.success("Q-Reversi:"+st.session_state.game_result["Q_winner"]+"(you:{},com:{})".format(st.session_state.game_result["YOU_angle"],st.session_state.game_result["COM_angle"]))
+        st.success("Q-Reversi_v2:"+st.session_state.game_result["q_Simple_winner"]+"(you:{},com:{})".format(st.session_state.game_result["q_YOU_num"],st.session_state.game_result["q_COM_num"]))
 
 
 
