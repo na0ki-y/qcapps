@@ -6,7 +6,7 @@ Group4(Quantum Force)
 
 
 
-![screenshot]("https://raw.githubusercontent.com/na0ki-y/qcapps/develop/image/q_reversi_image.png")
+![screenshot](/image/q_reversi_image.png)
 
 ## Installation :balloon:
 
